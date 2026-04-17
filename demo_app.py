@@ -30,11 +30,14 @@ class SettingsPage(Page):
     def __init__(self, manager):
         super().__init__(manager)
 
-        # Fade-in animation state (applied at draw time)
-        self.content_alpha = 0.0
+        # Fade-in animation state (animates only on first enter; see on_enter)
+        self.content_alpha = 255.0
+        self._entered_once = False
 
-        # TextBox rows — each opens the keyboard page when tapped
-        font_body = theme.font('body')
+        # TextBox rows — each opens the keyboard page when tapped.
+        # Mono font keeps caret/selection math trivial and visually matches
+        # the full-screen keyboard input page.
+        font_body = theme.font('body', mono=True)
         tb_style = dict(
             font=font_body,
             border_radius=theme.px(theme.radius_md),
@@ -119,9 +122,13 @@ class SettingsPage(Page):
 
     # ── Lifecycle ──
     def on_enter(self):
+        # Animate only on first entry. On pop-return, keep state fully visible
+        # so the morph transition's frozen snapshot shows the real UI.
+        if self._entered_once:
+            return
+        self._entered_once = True
         self.content_alpha = 0.0
         animator.tween(self, 'content_alpha', 255.0, duration=theme.anim_med, easing='ease_out')
-        # Simulate progress increments over time
         self._sim_progress(0)
 
     def _sim_progress(self, step):

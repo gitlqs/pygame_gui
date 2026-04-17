@@ -34,18 +34,29 @@ class PageManager:
             self.stack[-1].on_leave()
         self.stack.append(page)
         page.on_enter()
+        # Stash a COPY of source_rect on the page so the later pop can morph
+        # back to the same spot automatically.
+        if transition == 'morph' and source_rect is not None:
+            page._morph_source_rect = pygame.Rect(source_rect)
         if transition and len(self.stack) >= 2:
             self._start_transition('push', transition, source_rect, self.stack[-2], page)
 
-    def pop(self, transition=None):
-        """Pop the top page (keeps at least one on the stack)."""
+    def pop(self, transition=None, source_rect=None):
+        """
+        Pop the top page (keeps at least one on the stack).
+
+        If `transition='morph'` and no `source_rect` is passed, the rect stored
+        on the page at push time is reused — so pop automatically morphs back
+        to the widget that triggered the push.
+        """
         if len(self.stack) <= 1:
             return None
         popped = self.stack.pop()
         popped.on_leave()
         self.stack[-1].on_enter()
         if transition:
-            self._start_transition('pop', transition, None, popped, self.stack[-1])
+            sr = source_rect if source_rect is not None else getattr(popped, '_morph_source_rect', None)
+            self._start_transition('pop', transition, sr, popped, self.stack[-1])
         return popped
 
     def replace(self, page, transition='fade'):
@@ -138,18 +149,20 @@ class PageManager:
         tr = self._transition
         t = min(1.0, tr['t'] / tr['duration'])
         eased = 1 - (1 - t) ** 3  # ease_out_cubic
-        reverse = (tr['kind'] == 'pop')
-        p = (1 - eased) if reverse else eased
         before, after = tr['before'], tr['after']
         sw, sh = self.screen.get_size()
         ttype = tr['type']
+        reverse = (tr['kind'] == 'pop')
 
         if ttype == 'fade':
+            # Alpha crossfade. Push: new fades in. Pop: old fades out.
+            p = (1 - eased) if reverse else eased
             self.screen.blit(before, (0, 0))
             after.set_alpha(int(255 * p))
             self.screen.blit(after, (0, 0))
 
         elif ttype == 'slide':
+            p = (1 - eased) if reverse else eased
             shift = int(sw * p)
             self.screen.blit(before, (-shift, 0))
             self.screen.blit(after, (sw - shift, 0))
@@ -157,23 +170,39 @@ class PageManager:
         elif ttype == 'morph':
             sr = tr['source_rect']
             if sr is None:
-                # graceful fallback if no source_rect given
+                # No source rect (e.g. pop without stashed rect) → fall back to fade.
+                p = (1 - eased) if reverse else eased
                 self.screen.blit(before, (0, 0))
                 after.set_alpha(int(255 * p))
                 self.screen.blit(after, (0, 0))
                 return
-            # Old page fades out
-            before.set_alpha(int(255 * (1 - p)))
-            self.screen.blit(before, (0, 0))
-            # New page grows from source_rect to full screen
-            cx = sr.centerx + (sw / 2 - sr.centerx) * p
-            cy = sr.centery + (sh / 2 - sr.centery) * p
-            target_w = int(sr.w + (sw - sr.w) * p)
-            target_h = int(sr.h + (sh - sr.h) * p)
-            # Use fast scale during motion (quality loss invisible mid-animation)
-            scaled = pygame.transform.scale(after, (max(1, target_w), max(1, target_h)))
-            scaled.set_alpha(int(255 * min(1.0, p * 1.5)))  # fade in faster than scale
-            self.screen.blit(scaled, (int(cx - target_w / 2), int(cy - target_h / 2)))
+
+            # `mp` = morph progress of the moving page:
+            #   mp=0 → size/pos of source_rect (tiny)
+            #   mp=1 → size/pos of full screen
+            # Push: mp 0→1 (new page grows OUT of source_rect to fill screen).
+            # Pop:  mp 1→0 (exiting page shrinks BACK into source_rect).
+            if reverse:
+                mp = 1 - eased
+                # The returning-to page is the static "destination" behind.
+                # Fade it in as the exiting page shrinks away.
+                after.set_alpha(int(255 * eased))
+                self.screen.blit(after, (0, 0))
+                moving = before
+            else:
+                mp = eased
+                # The old page stays put, fades out under the growing new page.
+                before.set_alpha(int(255 * (1 - mp)))
+                self.screen.blit(before, (0, 0))
+                moving = after
+
+            tgt_w = max(1, int(sr.w + (sw - sr.w) * mp))
+            tgt_h = max(1, int(sr.h + (sh - sr.h) * mp))
+            cx = sr.centerx + (sw / 2 - sr.centerx) * mp
+            cy = sr.centery + (sh / 2 - sr.centery) * mp
+            scaled = pygame.transform.smoothscale(moving, (tgt_w, tgt_h))
+            scaled.set_alpha(int(255 * mp))
+            self.screen.blit(scaled, (int(cx - tgt_w / 2), int(cy - tgt_h / 2)))
         else:
             # unknown / no-op
             self.screen.blit(after, (0, 0))

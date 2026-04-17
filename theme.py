@@ -115,7 +115,11 @@ def font(name_or_size, mono=False):
 
     Args:
         name_or_size: one of FONT_SIZES keys or an int design-px size.
-        mono: use monospace font (requires `font_path_mono` set).
+        mono: use monospace font. If `font_path_mono` is set, loads that TTF;
+              otherwise falls back to a SysFont lookup across common mono
+              families (Consolas / Courier New / Liberation Mono / Menlo /
+              Monaco). pygame's default is NOT monospace, so we can't just
+              pass None to Font() for mono.
     """
     if isinstance(name_or_size, str):
         size_design = FONT_SIZES.get(name_or_size, 22)
@@ -123,11 +127,21 @@ def font(name_or_size, mono=False):
         size_design = int(name_or_size)
     size_actual = max(8, int(size_design * scale))
     key = (size_actual, mono)
-    if key not in _font_cache:
-        path = font_path_mono if mono else font_path
-        try:
-            _font_cache[key] = pygame.font.Font(path, size_actual)
-        except Exception:
-            # Fallback to default if custom font fails
-            _font_cache[key] = pygame.font.Font(None, size_actual)
-    return _font_cache[key]
+    if key in _font_cache:
+        return _font_cache[key]
+
+    path = font_path_mono if mono else font_path
+    try:
+        if path:
+            f = pygame.font.Font(path, size_actual)
+        elif mono:
+            f = pygame.font.SysFont(
+                'consolas,couriernew,liberationmono,menlo,monaco,monospace',
+                size_actual,
+            )
+        else:
+            f = pygame.font.Font(None, size_actual)
+    except Exception:
+        f = pygame.font.Font(None, size_actual)
+    _font_cache[key] = f
+    return f
