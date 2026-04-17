@@ -1,11 +1,11 @@
 import sys
 import pygame
-from css_button import CSSButton
+from button import Button
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((900, 600))
-    pygame.display.set_caption("CSSButton Rich Demo Showcase")
+    pygame.display.set_caption("Button Rich Demo Showcase")
     clock = pygame.time.Clock()
 
     # 准备字体支持
@@ -23,7 +23,7 @@ def main():
     # =========================================================
     # 1. Primary Button (核心主要按钮，带有柔和高斯模糊发光阴影)
     # =========================================================
-    btn_primary = CSSButton(
+    btn_primary = Button(
         50, 50, 220, 60,
         bg_color=(24, 144, 255),
         hover_color=(64, 169, 255),
@@ -38,7 +38,7 @@ def main():
     # =========================================================
     # 2. Ghost / Outline Button (幽灵边框按钮)
     # =========================================================
-    btn_ghost = CSSButton(
+    btn_ghost = Button(
         300, 50, 220, 60,
         bg_color=(255, 255, 255, 0),     # 完全透明背景
         hover_color=(24, 144, 255, 20),  # 悬停时稍微有一点底色
@@ -52,7 +52,7 @@ def main():
     # =========================================================
     # 3. Danger / Error Button (危险操作按钮)
     # =========================================================
-    btn_danger = CSSButton(
+    btn_danger = Button(
         550, 50, 220, 60,
         bg_color=(255, 77, 79),
         hover_color=(255, 120, 117),
@@ -65,7 +65,7 @@ def main():
     # =========================================================
     # 4. Complex Pro Card (极度复杂的网页级别信息卡片作为按钮)
     # =========================================================
-    btn_card = CSSButton(
+    btn_card = Button(
         50, 150, 350, 140,
         bg_color=(255, 255, 255),
         hover_color=(248, 250, 255),
@@ -89,7 +89,7 @@ def main():
     # =========================================================
     # 5. Disabled Button (禁用状态)
     # =========================================================
-    btn_disabled = CSSButton(
+    btn_disabled = Button(
         450, 150, 220, 60,
         disabled=True,
         bg_color=(255, 255, 255),  # 禁用时会覆盖成 disabled_color
@@ -102,7 +102,7 @@ def main():
     # =========================================================
     # 6. Pill / Round Action Button (全圆角胶囊按钮)
     # =========================================================
-    btn_pill = CSSButton(
+    btn_pill = Button(
         450, 230, 320, 60,
         bg_color=(50, 50, 50),
         hover_color=(70, 70, 70),

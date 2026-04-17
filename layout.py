@@ -341,13 +341,13 @@ class Spacer:
         self.rect = pygame.Rect(0, 0, width, height)
 
 
-class Label:
+class Text:
     """
     文本叶子元素，可参与布局系统。
 
     用法:
-    label = Label("Hello", font, color=(0,0,0))
-    HBox(children=[icon, label])
+    txt = Text("Hello", font, color=(0,0,0))
+    HBox(children=[icon, txt])
     """
 
     def __init__(self, text, font, color=(0, 0, 0), antialias=True):

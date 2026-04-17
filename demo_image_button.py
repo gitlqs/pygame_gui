@@ -1,11 +1,11 @@
 import sys
 import pygame
-from css_button import CSSButton
+from button import Button
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((1000, 700))
-    pygame.display.set_caption("CSSButton Image + Text Demo")
+    pygame.display.set_caption("Button Image + Text Demo")
     clock = pygame.time.Clock()
 
     try:
@@ -24,7 +24,7 @@ def main():
     # =========================================================
     # 1. PNG 图标 + 文字按钮 (Pygame Logo)
     # =========================================================
-    btn_png = CSSButton(
+    btn_png = Button(
         50, 80, 280, 70,
         bg_color=(50, 180, 50),
         hover_color=(70, 200, 70),
@@ -42,7 +42,7 @@ def main():
     # =========================================================
     # 2. SVG 图标 + 文字按钮 (TypeScript Logo)
     # =========================================================
-    btn_svg = CSSButton(
+    btn_svg = Button(
         50, 180, 280, 70,
         bg_color=(49, 120, 198),
         hover_color=(70, 140, 220),
@@ -60,7 +60,7 @@ def main():
     # =========================================================
     # 3. JPG 图标 + 文字按钮 (Fire Icon)
     # =========================================================
-    btn_jpg = CSSButton(
+    btn_jpg = Button(
         50, 280, 280, 70,
         bg_color=(255, 87, 34),
         hover_color=(255, 120, 70),
@@ -78,7 +78,7 @@ def main():
     # =========================================================
     # 4. SVG 大图标 + 多行文字卡片 (Python Logo)
     # =========================================================
-    btn_card = CSSButton(
+    btn_card = Button(
         380, 80, 350, 130,
         bg_color=(255, 255, 255),
         hover_color=(248, 250, 255),
@@ -101,7 +101,7 @@ def main():
     # =========================================================
     # 5. 纯图标按钮 (Icon-only，类似 Toolbar 按钮)
     # =========================================================
-    btn_icon_only = CSSButton(
+    btn_icon_only = Button(
         380, 240, 60, 60,
         bg_color=(240, 240, 245),
         hover_color=(220, 225, 240),
@@ -113,7 +113,7 @@ def main():
     )
     btn_icon_only.add_image('test_svg.svg', size=(32, 32))
 
-    btn_icon_only2 = CSSButton(
+    btn_icon_only2 = Button(
         455, 240, 60, 60,
         bg_color=(240, 240, 245),
         hover_color=(220, 225, 240),
@@ -125,7 +125,7 @@ def main():
     )
     btn_icon_only2.add_image('demo_fire_icon.jpg', size=(32, 32))
 
-    btn_icon_only3 = CSSButton(
+    btn_icon_only3 = Button(
         530, 240, 60, 60,
         bg_color=(240, 240, 245),
         hover_color=(220, 225, 240),
@@ -140,7 +140,7 @@ def main():
     # =========================================================
     # 6. 图片居中 + 底部文字 (App 图标风格)
     # =========================================================
-    btn_app1 = CSSButton(
+    btn_app1 = Button(
         380, 330, 90, 100,
         bg_color=(255, 255, 255),
         hover_color=(245, 248, 255),
@@ -157,7 +157,7 @@ def main():
         .add_text("TypeScript", font_s, color=(80, 80, 80), valign='bottom', offset=(0, -12))
     )
 
-    btn_app2 = CSSButton(
+    btn_app2 = Button(
         485, 330, 90, 100,
         bg_color=(255, 255, 255),
         hover_color=(245, 248, 255),
@@ -174,7 +174,7 @@ def main():
         .add_text("Hot", font_s, color=(80, 80, 80), valign='bottom', offset=(0, -12))
     )
 
-    btn_app3 = CSSButton(
+    btn_app3 = Button(
         590, 330, 90, 100,
         bg_color=(255, 255, 255),
         hover_color=(245, 248, 255),
@@ -194,7 +194,7 @@ def main():
     # =========================================================
     # 7. 禁用状态的图片按钮
     # =========================================================
-    btn_disabled_img = CSSButton(
+    btn_disabled_img = Button(
         50, 380, 280, 70,
         bg_color=(255, 255, 255),
         disabled=True,
@@ -211,7 +211,7 @@ def main():
     # =========================================================
     # 8. Ghost 图标按钮 (Outline + 图片 + 文字)
     # =========================================================
-    btn_ghost_img = CSSButton(
+    btn_ghost_img = Button(
         50, 480, 280, 70,
         bg_color=(255, 255, 255, 0),
         hover_color=(49, 120, 198, 15),
@@ -229,7 +229,7 @@ def main():
     # =========================================================
     # 9. 多图片叠加按钮 (头像堆叠风格)
     # =========================================================
-    btn_multi_img = CSSButton(
+    btn_multi_img = Button(
         380, 460, 300, 80,
         bg_color=(255, 255, 255),
         hover_color=(248, 250, 255),

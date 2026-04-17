@@ -1,6 +1,15 @@
 # pg_ui — Pygame CSS-Style UI Toolkit
 
-一套轻量的 Pygame UI 组件库，提供 **CSSButton**（HTML/CSS 风格按钮）和 **Layout**（Flexbox 风格布局系统）。零外部依赖，仅需 `pygame`。
+一套轻量的 Pygame UI 组件库，零外部依赖（仅需 `pygame`）。
+
+**组件：**
+- **CSSButton** — HTML/CSS 风格按钮（阴影、圆角、过渡）
+- **CSSLabel** — 样式化文本标签/徽章
+- **CSSTextBox** — 文本输入框（单行 / 多行 / 密码）
+- **CSSCheckbox** — 复选框
+- **CSSProgress** — 进度条（确定 / 不确定）
+- **CSSPageControl** — 分页指示小圆点
+- **Layout** — Flexbox 风格布局系统（HBox / VBox / Stack）
 
 ---
 
@@ -22,6 +31,11 @@
   - [图片内容](#12-图片内容-add_image)
   - [链式调用](#13-链式调用)
   - [布局系统内容](#14-布局系统内容-set_content)
+- [CSSLabel](#csslabel)
+- [CSSTextBox](#csstextbox)
+- [CSSCheckbox](#csscheckbox)
+- [CSSProgress](#cssprogress)
+- [CSSPageControl](#csspagecontrol)
 - [Layout 布局系统](#layout-布局系统)
   - [HBox 水平布局](#hbox-水平布局)
   - [VBox 垂直布局](#vbox-垂直布局)
@@ -374,6 +388,314 @@ btn_card.set_content(HBox(gap=15, align='start', valign='center', padding=(0, 20
 
 ---
 
+## CSSLabel
+
+```python
+from css_label import CSSLabel
+```
+
+带背景、边框、padding 的样式化文本标签，适合做徽章 / 标签 / 状态提示。
+与 `layout.Label`（纯文本叶子）的区别：`CSSLabel` 有完整容器样式，自动根据文本+padding 撑开。
+
+```python
+# 彩色徽章
+info = CSSLabel("INFO", font_s,
+    color=(24, 144, 255),
+    bg_color=(230, 244, 255),
+    padding=(4, 10),
+    border_radius=10,
+)
+
+# 描边风格
+tag = CSSLabel("Beta", font_s,
+    color=(90, 90, 100),
+    bg_color=(255, 255, 255),
+    border_color=(200, 200, 210),
+    border_width=1,
+    padding=(4, 10),
+    border_radius=6,
+)
+```
+
+**参数：**
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text`, `font` | str / Font | — | 必填 |
+| `color` | tuple | `(30,30,30)` | 文本颜色 |
+| `bg_color` | tuple | `(0,0,0,0)` | 背景 (支持 RGBA) |
+| `border_color` | tuple | `None` | 边框颜色 |
+| `border_width` | int | 1 | 边框粗细 |
+| `border_radius` | int | 0 | 圆角 |
+| `padding` | int/tuple | 0 | 同布局 padding 格式 |
+| `align` / `valign` | str | `'center'` | 文本对齐 |
+| `width` / `height` | int | 0 | 0 = 自动撑开 |
+
+**动态更新：**
+
+```python
+status = CSSLabel("OK", font_s, color=(22,163,74), bg_color=(220,252,231),
+    padding=(4,10), border_radius=10)
+status.set_text("FAILED")
+status.set_color((220, 38, 38))
+status.set_bg_color((254, 226, 226))
+```
+
+---
+
+## CSSTextBox
+
+```python
+from css_textbox import CSSTextBox
+```
+
+功能完整的文本输入框，支持 **单行 / 多行 / 密码** 三种模式。
+
+### 基础单行输入
+
+```python
+tb = CSSTextBox(50, 50, 300, 36, font,
+    placeholder='Enter your name...',
+    border_radius=8,
+    on_change=lambda txt: print(f"changed: {txt}"),
+    on_submit=lambda txt: print(f"submitted: {txt}"),  # Enter 触发
+)
+```
+
+### 密码框
+
+```python
+tb_pwd = CSSTextBox(50, 100, 300, 36, font,
+    mode='password',
+    placeholder='Password',
+    mask_char='•',     # 默认就是 •
+    max_length=20,
+)
+```
+
+### 多行文本
+
+```python
+tb_multi = CSSTextBox(50, 160, 500, 120, font,
+    mode='multi',
+    placeholder='Write a note...\nPress Enter for new line.',
+)
+```
+多行模式下 Enter 换行，Ctrl+Enter 触发 `on_submit`。
+
+### 支持的按键
+
+| 按键 | 行为 |
+|------|------|
+| 方向键 ←/→ | 移动光标 |
+| 方向键 ↑/↓ | 上下行（仅多行模式） |
+| Home / End | 行首 / 行尾 |
+| Backspace / Delete | 删除字符 |
+| Enter | 单行/密码 → 提交；多行 → 换行 |
+| Ctrl+Enter | 多行模式下提交 |
+
+### 参数
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `mode` | `'single'` | `'single'` / `'multi'` / `'password'` |
+| `text` | `''` | 初始文本 |
+| `placeholder` | `''` | 占位符 |
+| `mask_char` | `'•'` | 密码模式替代字符 |
+| `max_length` | 0 | 最大字符数 (0 = 无限制) |
+| `read_only` | False | 只读 |
+| `disabled` | False | 禁用 |
+| `bg_color` / `focus_bg_color` / `disabled_bg_color` | — | 三态背景 |
+| `text_color` / `placeholder_color` / `caret_color` | — | 文本/占位/光标色 |
+| `border_color` / `focus_border_color` | — | 焦点自动切换边框色 |
+| `border_width` / `border_radius` | 1 / 6 | |
+| `padding` | `(6, 10)` | 内边距 |
+| `on_change(text)` | None | 文本变化回调 |
+| `on_submit(text)` | None | 提交回调 |
+
+### 方法
+
+```python
+tb.set_text("Hello")
+tb.set_focus(True)        # 程序触发聚焦
+tb.set_disabled(True)     # 动态禁用
+```
+
+> 文本超出宽度时自动滚动（单行横向 / 多行纵向）。
+
+---
+
+## CSSCheckbox
+
+```python
+from css_checkbox import CSSCheckbox
+```
+
+带文本标签的复选框，支持 hover / disabled / 颜色过渡。
+
+```python
+cb = CSSCheckbox(50, 50,
+    checked=False,
+    label='Accept terms and conditions',
+    font=font,
+    on_change=lambda checked: print(f"checked={checked}"),
+)
+
+# 自定义颜色
+cb_green = CSSCheckbox(50, 100,
+    label='Subscribe', font=font,
+    checked_color=(34, 197, 94),
+    checked_border_color=(34, 197, 94),
+)
+
+# 无文字版
+cb_plain = CSSCheckbox(50, 150, box_size=24)
+```
+
+**参数：**
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `checked` | False | 初始状态 |
+| `box_size` | 20 | 复选框边长 |
+| `box_color` / `checked_color` / `hover_color` / `disabled_color` | — | 四态背景 |
+| `border_color` / `checked_border_color` | — | 选中时自动切换 |
+| `border_width` / `border_radius` | 2 / 4 | |
+| `check_color` | `(255,255,255)` | 对勾颜色 |
+| `check_width` | 2 | 对勾线宽 |
+| `label` | None | 文字（None 则无标签） |
+| `font` / `text_color` | — | 标签字体/颜色 |
+| `label_gap` | 8 | box 与文字间距 |
+| `transition_speed` | 0.2 | 颜色/尺寸过渡 |
+| `disabled` | False | 禁用 |
+| `on_change(checked)` | None | 回调 |
+
+**方法：**
+
+```python
+cb.toggle()           # 反转
+cb.set_checked(True)  # 设定
+cb.set_disabled(True) # 禁用
+```
+
+---
+
+## CSSProgress
+
+```python
+from css_progress import CSSProgress
+```
+
+进度条，支持确定进度与不确定（循环动画）两种模式。
+
+### 确定进度
+
+```python
+pg = CSSProgress(50, 50, 300, 10,
+    value=0.35,                  # 0.0 ~ 1.0
+    bar_color=(24, 144, 255),
+    track_color=(230, 230, 230),
+)
+
+# 每帧或定时更新
+pg.set_value(0.8)
+```
+
+### 带百分比文字
+
+```python
+pg = CSSProgress(50, 100, 300, 22,
+    value=0.65,
+    show_text=True,
+    font=font_s,
+    text_color=(255, 255, 255),
+    bar_color=(34, 197, 94),
+    text_format='{percent}%',   # 可自定义，支持 {percent} {value}
+)
+```
+
+### 不确定进度（加载中）
+
+```python
+pg_loading = CSSProgress(50, 150, 300, 10,
+    indeterminate=True,
+    bar_color=(168, 85, 247),
+    indeterminate_speed=0.015,
+)
+```
+
+一段亮条会在轨道内左右循环移动，表达"处理中、进度未知"。
+
+**参数：**
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `value` | 0.0 | 进度 (0~1) |
+| `track_color` / `bar_color` | — | 背景 / 进度条色 |
+| `border_radius` | `height//2` | 默认胶囊形 |
+| `border_color` / `border_width` | None / 0 | |
+| `show_text` / `font` / `text_color` | — | 文字显示 |
+| `text_format` | `'{percent}%'` | 文字模板 |
+| `indeterminate` | False | 不确定模式 |
+| `indeterminate_speed` | 0.015 | 动画速度 |
+| `animated` | True | 值变化平滑过渡 |
+| `transition_speed` | 0.15 | 平滑过渡速度 |
+
+---
+
+## CSSPageControl
+
+```python
+from css_pagecontrol import CSSPageControl
+```
+
+iOS 风格的分页指示小圆点：N 个点代表 N 页，当前页放大变色，点击跳转。
+
+```python
+pc = CSSPageControl(100, 200, count=5,
+    current=0,
+    dot_size=8,
+    active_size=14,
+    gap=10,
+    dot_color=(200, 200, 200),
+    active_color=(24, 144, 255),
+    on_change=lambda idx: print(f"page {idx}"),
+)
+```
+
+### 垂直方向
+
+```python
+pc_v = CSSPageControl(20, 100, count=4,
+    orientation='vertical',
+    dot_size=10, active_size=20,
+)
+```
+
+**参数：**
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `count` | — | 页数 |
+| `current` | 0 | 当前页 (0-based) |
+| `dot_size` | 8 | 未激活直径 |
+| `active_size` | `dot_size * 1.5` | 激活直径 |
+| `gap` | 10 | 间距 |
+| `dot_color` / `active_color` / `hover_color` | — | 三态色 |
+| `orientation` | `'horizontal'` | `'horizontal'` / `'vertical'` |
+| `transition_speed` | 0.2 | 过渡速度 |
+| `on_change(index)` | None | 回调 |
+
+**方法：**
+
+```python
+pc.next()             # 下一页
+pc.prev()             # 上一页
+pc.set_current(3)     # 跳转
+```
+
+---
+
 ## Layout 布局系统
 
 ```python
@@ -684,9 +1006,16 @@ pygame.quit()
 ```
 pg_ui/
 ├── css_button.py         # CSSButton 按钮组件
+├── css_label.py          # CSSLabel 样式化标签/徽章
+├── css_textbox.py        # CSSTextBox 文本输入框 (single/multi/password)
+├── css_checkbox.py       # CSSCheckbox 复选框
+├── css_progress.py       # CSSProgress 进度条
+├── css_pagecontrol.py    # CSSPageControl 分页圆点
 ├── layout.py             # 布局系统 (HBox, VBox, Stack, Spacer, Label, Icon)
 ├── test_css_button.py    # 单元测试
 ├── demo_css_button.py    # CSSButton 基础样式 Demo
 ├── demo_image_button.py  # 图片 + 文字混合 Demo
-└── demo_layout.py        # 布局系统 Demo
+├── demo_layout.py        # 布局系统 Demo
+├── demo_dashboard.py     # 综合 Dashboard Demo
+└── demo_widgets.py       # 新组件综合 Demo (Label/TextBox/Checkbox/Progress/PageControl)
 ```

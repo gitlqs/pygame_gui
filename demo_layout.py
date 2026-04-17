@@ -6,8 +6,8 @@ Layout 系统 Demo — 用 HBox / VBox / Stack 替代所有 hardcoded 坐标
 """
 import sys
 import pygame
-from css_button import CSSButton
-from layout import HBox, VBox, Stack, Spacer, Label, Icon
+from button import Button
+from layout import HBox, VBox, Stack, Spacer, Text, Icon
 
 
 def main():
@@ -31,49 +31,49 @@ def main():
     # 左侧栏: 用 set_content() 新方式构建按钮内容
     # 不需要任何手动 offset！HBox 自动处理间距和对齐
     # =========================================================
-    btn_png = CSSButton(0, 0, 280, 65,
+    btn_png = Button(0, 0, 280, 65,
         bg_color=(50, 180, 50), hover_color=(70, 200, 70), pressed_color=(30, 150, 30),
         border_radius=14, shadow_color=(50, 180, 50, 50), shadow_blur=6, shadow_offset=(0, 5),
     )
     btn_png.set_content(HBox(gap=12, align='center', valign='center', padding=(0, 20, 0, 20), children=[
         Icon('demo_pygame_logo.png', size=(50, 14)),
-        Label("Pygame Powered", font_l, color=(255, 255, 255)),
+        Text("Pygame Powered", font_l, color=(255, 255, 255)),
     ]))
 
-    btn_svg = CSSButton(0, 0, 280, 65,
+    btn_svg = Button(0, 0, 280, 65,
         bg_color=(49, 120, 198), hover_color=(70, 140, 220), pressed_color=(30, 90, 170),
         border_radius=14, shadow_color=(49, 120, 198, 50), shadow_blur=6, shadow_offset=(0, 5),
     )
     btn_svg.set_content(HBox(gap=14, align='center', valign='center', padding=(0, 20, 0, 20), children=[
         Icon('test_svg.svg', size=(40, 40)),
-        Label("TypeScript", font_xl, color=(255, 255, 255)),
+        Text("TypeScript", font_xl, color=(255, 255, 255)),
     ]))
 
-    btn_jpg = CSSButton(0, 0, 280, 65,
+    btn_jpg = Button(0, 0, 280, 65,
         bg_color=(255, 87, 34), hover_color=(255, 120, 70), pressed_color=(220, 60, 20),
         border_radius=14, shadow_color=(255, 87, 34, 50), shadow_blur=6, shadow_offset=(0, 5),
     )
     btn_jpg.set_content(HBox(gap=14, align='center', valign='center', padding=(0, 20, 0, 20), children=[
         Icon('demo_fire_icon.jpg', size=(40, 40)),
-        Label("Hot Deals!", font_xl, color=(255, 255, 255)),
+        Text("Hot Deals!", font_xl, color=(255, 255, 255)),
     ]))
 
-    btn_disabled = CSSButton(0, 0, 280, 65,
+    btn_disabled = Button(0, 0, 280, 65,
         bg_color=(255, 255, 255), disabled=True, disabled_color=(240, 240, 240),
         border_radius=14, border_color=(200, 200, 200), border_width=1,
     )
     btn_disabled.set_content(HBox(gap=10, align='center', valign='center', padding=(0, 15, 0, 15), children=[
         Icon('demo_python_logo.svg', size=(90, 27)),
-        Label("Not Available", font_m, color=(160, 160, 160)),
+        Text("Not Available", font_m, color=(160, 160, 160)),
     ]))
 
-    btn_ghost = CSSButton(0, 0, 280, 65,
+    btn_ghost = Button(0, 0, 280, 65,
         bg_color=(255, 255, 255, 0), hover_color=(49, 120, 198, 15), pressed_color=(49, 120, 198, 40),
         border_radius=14, border_color=(49, 120, 198), border_width=2, shadow_color=(0, 0, 0, 0),
     )
     btn_ghost.set_content(HBox(gap=12, align='center', valign='center', padding=(0, 20, 0, 20), children=[
         Icon('test_svg.svg', size=(36, 36)),
-        Label("Open Project", font_l, color=(49, 120, 198)),
+        Text("Open Project", font_l, color=(49, 120, 198)),
     ]))
 
     sidebar = VBox(x=40, y=40, gap=18, children=[
@@ -84,7 +84,7 @@ def main():
     # 右上: HBox 水平排列三个 icon-only 工具栏按钮
     # =========================================================
     def make_icon_btn(image_path, size):
-        btn = CSSButton(0, 0, 60, 60,
+        btn = Button(0, 0, 60, 60,
             bg_color=(240, 240, 245), hover_color=(220, 225, 240), pressed_color=(200, 210, 230),
             border_radius=12, shadow_color=(0, 0, 0, 20), shadow_blur=4, shadow_offset=(0, 3),
         )
@@ -101,7 +101,7 @@ def main():
     # 右中: HBox 水平排列三个 App 图标风格按钮
     # =========================================================
     def make_app_btn(image_path, img_size, label):
-        btn = CSSButton(0, 0, 90, 100,
+        btn = Button(0, 0, 90, 100,
             bg_color=(255, 255, 255), hover_color=(245, 248, 255), pressed_color=(235, 240, 250),
             border_radius=16, border_color=(230, 230, 235), border_width=1,
             shadow_color=(0, 0, 0, 12), shadow_blur=6, shadow_offset=(0, 4),
@@ -119,7 +119,7 @@ def main():
     # =========================================================
     # 右下: 多图叠加按钮
     # =========================================================
-    btn_multi = CSSButton(0, 0, 300, 80,
+    btn_multi = Button(0, 0, 300, 80,
         bg_color=(255, 255, 255), hover_color=(248, 250, 255), pressed_color=(240, 245, 255),
         border_radius=16, border_color=(220, 220, 230), border_width=1,
         shadow_color=(0, 0, 0, 15), shadow_blur=8, shadow_offset=(0, 5),
@@ -136,7 +136,7 @@ def main():
     # 右下方: set_content + 嵌套布局的 Card 按钮
     # HBox 里嵌套 VBox，实现复杂卡片内容
     # =========================================================
-    btn_card = CSSButton(0, 0, 300, 100,
+    btn_card = Button(0, 0, 300, 100,
         bg_color=(255, 255, 255), hover_color=(248, 250, 255), pressed_color=(240, 245, 255),
         border_radius=18, border_color=(220, 220, 230), border_width=1,
         shadow_color=(0, 0, 0, 15), shadow_blur=8, shadow_offset=(0, 5),
@@ -144,27 +144,27 @@ def main():
     btn_card.set_content(HBox(gap=15, align='start', valign='center', padding=(0, 20, 0, 20), children=[
         Icon('demo_python_logo.svg', size=(80, 24)),
         VBox(gap=4, children=[
-            Label("Python 3.12", font_l, color=(55, 118, 171)),
-            Label("Batteries Included", font_s, color=(120, 120, 120)),
+            Text("Python 3.12", font_l, color=(55, 118, 171)),
+            Text("Batteries Included", font_s, color=(120, 120, 120)),
         ]),
     ]))
 
     # =========================================================
     # 底部: HBox + space-between 演示
     # =========================================================
-    btn_cancel = CSSButton(0, 0, 140, 50,
+    btn_cancel = Button(0, 0, 140, 50,
         bg_color=(240, 240, 240), hover_color=(230, 230, 230), pressed_color=(220, 220, 220),
         border_radius=10, border_color=(200, 200, 200), border_width=1, shadow_color=(0,0,0,0),
     )
     btn_cancel.add_text("Cancel", font_m, color=(80, 80, 80))
 
-    btn_save = CSSButton(0, 0, 140, 50,
+    btn_save = Button(0, 0, 140, 50,
         bg_color=(24, 144, 255), hover_color=(64, 169, 255), pressed_color=(9, 88, 217),
         border_radius=10, shadow_color=(24, 144, 255, 40), shadow_blur=4, shadow_offset=(0, 3),
     )
     btn_save.add_text("Save", font_m, color=(255, 255, 255))
 
-    btn_delete = CSSButton(0, 0, 140, 50,
+    btn_delete = Button(0, 0, 140, 50,
         bg_color=(255, 77, 79), hover_color=(255, 120, 117), pressed_color=(217, 54, 62),
         border_radius=10, shadow_color=(255, 77, 79, 40), shadow_blur=4, shadow_offset=(0, 3),
     )

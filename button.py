@@ -1,6 +1,6 @@
 import pygame
 
-class CSSButton:
+class Button:
     def __init__(self, x, y, width, height, **kwargs):
         """
         HTML/CSS 风格的高级 Pygame 按钮类
@@ -174,50 +174,27 @@ class CSSButton:
             self.rect.topleft = self.original_rect.topleft
 
     def handle_event(self, event):
+        # Touch-first: no hover state, no cursor switching.
+        # Only normal / pressed / disabled states are used.
         if self.disabled:
-            if self._was_hovered:
-                # 尝试设置光标，如果在没有视频系统的无头环境中可能会失败，这里可以加个 try-except 但不是必须
-                try: pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                except: pass
-                self._was_hovered = False
             return
 
-        mouse_pos = pygame.mouse.get_pos()
-        is_hovered = self.rect.collidepoint(mouse_pos)
-
-        if event.type == pygame.MOUSEMOTION:
-            if self.state != 'pressed':
-                self.state = 'hover' if is_hovered else 'normal'
-
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and is_hovered:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.rect.collidepoint(event.pos):
                 self.state = 'pressed'
-                # 模拟 CSS:active 的 transform: translateY
                 self.rect.y = self.original_rect.y + self.pressed_translate[1]
                 self.rect.x = self.original_rect.x + self.pressed_translate[0]
-                if self.on_mouse_down: self.on_mouse_down()
+                if self.on_mouse_down:
+                    self.on_mouse_down()
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                if self.state == 'pressed':
-                    self.rect.y = self.original_rect.y
-                    self.rect.x = self.original_rect.x
-                    if is_hovered:
-                        self.state = 'hover'
-                        if self.on_mouse_up: self.on_mouse_up()
-                    else:
-                        self.state = 'normal'
-        
-        # 光标切换 (hover 时变小手)
-        if self.cursor_hand:
-            if is_hovered and not self._was_hovered:
-                try: pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-                except: pass
-                self._was_hovered = True
-            elif not is_hovered and self._was_hovered:
-                try: pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                except: pass
-                self._was_hovered = False
+            if event.button == 1 and self.state == 'pressed':
+                self.rect.y = self.original_rect.y
+                self.rect.x = self.original_rect.x
+                was_on = self.rect.collidepoint(event.pos)
+                self.state = 'normal'
+                if was_on and self.on_mouse_up:
+                    self.on_mouse_up()
 
     def _lerp_color(self, c1, c2, amount):
         res = []
@@ -231,8 +208,6 @@ class CSSButton:
         # 1. 计算状态颜色并平滑过渡 (Color Transition)
         if self.disabled:
             target_color = self.disabled_color
-        elif self.state == 'hover':
-            target_color = self.hover_color
         elif self.state == 'pressed':
             target_color = self.pressed_color
         else:
@@ -312,10 +287,10 @@ class CSSButton:
 
     def _draw_content(self, surface):
         """递归绘制布局系统内容，支持禁用状态"""
-        from layout import Label, Icon, Container
+        from layout import Text, Icon, Container
 
         def draw_node(node):
-            if isinstance(node, Label):
+            if isinstance(node, Text):
                 if self.disabled:
                     c = node.color
                     dimmed = (c[0]//2, c[1]//2, c[2]//2)

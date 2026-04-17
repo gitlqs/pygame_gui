@@ -4,8 +4,8 @@
 """
 import sys
 import pygame
-from css_button import CSSButton
-from layout import HBox, VBox, Stack, Spacer, Label, Icon
+from button import Button
+from layout import HBox, VBox, Stack, Spacer, Text, Icon
 
 
 def main():
@@ -55,11 +55,11 @@ def main():
     # =============================================
 
     # Logo 区
-    logo_label = Label("Dashboard", font_brand, color=(150, 160, 255))
+    logo_label = Text("Dashboard", font_brand, color=(150, 160, 255))
 
     # 导航按钮工厂
     def make_nav_btn(icon_text, label, active=False):
-        btn = CSSButton(0, 0, 180, 42,
+        btn = Button(0, 0, 180, 42,
             bg_color=SIDEBAR_ACTIVE if active else (0, 0, 0, 0),
             hover_color=SIDEBAR_HOVER,
             pressed_color=SIDEBAR_ACTIVE,
@@ -68,8 +68,8 @@ def main():
             pressed_translate=(0, 0),
         )
         btn.set_content(HBox(gap=12, align='start', valign='center', padding=(0, 14, 0, 14), children=[
-            Label(icon_text, font_body, color=BLUE_LIGHT if active else GRAY_500),
-            Label(label, font_body, color=WHITE if active else GRAY_500),
+            Text(icon_text, font_body, color=BLUE_LIGHT if active else GRAY_500),
+            Text(label, font_body, color=WHITE if active else GRAY_500),
         ]))
         return btn
 
@@ -85,7 +85,7 @@ def main():
     ])
 
     # 用户信息区域
-    user_btn = CSSButton(0, 0, 180, 50,
+    user_btn = Button(0, 0, 180, 50,
         bg_color=(0, 0, 0, 0),
         hover_color=SIDEBAR_HOVER,
         pressed_color=SIDEBAR_ACTIVE,
@@ -94,10 +94,10 @@ def main():
         pressed_translate=(0, 0),
     )
     user_btn.set_content(HBox(gap=10, align='start', valign='center', padding=(0, 14, 0, 14), children=[
-        Label("QS", font_small, color=WHITE),
+        Text("QS", font_small, color=WHITE),
         VBox(gap=1, children=[
-            Label("Qiushi", font_small, color=WHITE),
-            Label("Admin", font_tiny, color=GRAY_500),
+            Text("Qiushi", font_small, color=WHITE),
+            Text("Admin", font_tiny, color=GRAY_500),
         ]),
     ]))
 
@@ -115,18 +115,18 @@ def main():
     # 主内容区 — 顶部 Header
     # =============================================
 
-    header_title = Label("Overview", font_h1, color=GRAY_700)
-    header_subtitle = Label("Thursday, April 16, 2026", font_small, color=GRAY_500)
+    header_title = Text("Overview", font_h1, color=GRAY_700)
+    header_subtitle = Text("Thursday, April 16, 2026", font_small, color=GRAY_500)
 
-    btn_new_project = CSSButton(0, 0, 140, 40,
+    btn_new_project = Button(0, 0, 140, 40,
         bg_color=BLUE, hover_color=BLUE_LIGHT, pressed_color=BLUE_DARK,
         border_radius=8,
         shadow_color=(59, 130, 246, 35), shadow_blur=5, shadow_offset=(0, 3),
         pressed_translate=(0, 1),
     )
     btn_new_project.set_content(HBox(gap=6, align='center', valign='center', children=[
-        Label("+", font_h2, color=WHITE),
-        Label("New Project", font_small, color=WHITE),
+        Text("+", font_h2, color=WHITE),
+        Text("New Project", font_small, color=WHITE),
     ]))
 
     header = HBox(width=560, align='space-between', valign='center', children=[
@@ -139,7 +139,7 @@ def main():
     # =============================================
 
     def make_stat_card(title, value, change, change_color, accent_color):
-        btn = CSSButton(0, 0, 128, 95,
+        btn = Button(0, 0, 128, 95,
             bg_color=WHITE,
             hover_color=GRAY_100,
             pressed_color=(230, 235, 245),
@@ -150,9 +150,9 @@ def main():
             pressed_translate=(0, 1),
         )
         btn.set_content(VBox(gap=6, align='start', padding=(14, 16, 14, 16), children=[
-            Label(title, font_tiny, color=GRAY_500),
-            Label(value, font_h1, color=GRAY_700),
-            Label(change, font_tiny, color=change_color),
+            Text(title, font_tiny, color=GRAY_500),
+            Text(value, font_h1, color=GRAY_700),
+            Text(change, font_tiny, color=change_color),
         ]))
         return btn
 
@@ -167,8 +167,8 @@ def main():
     # 项目列表
     # =============================================
 
-    projects_title = Label("Recent Projects", font_h2, color=GRAY_700)
-    btn_view_all = CSSButton(0, 0, 72, 30,
+    projects_title = Text("Recent Projects", font_h2, color=GRAY_700)
+    btn_view_all = Button(0, 0, 72, 30,
         bg_color=(0, 0, 0, 0), hover_color=(240, 244, 255), pressed_color=(230, 237, 255),
         border_radius=6, shadow_color=(0, 0, 0, 0), pressed_translate=(0, 0),
     )
@@ -179,7 +179,7 @@ def main():
     ])
 
     def make_project_row(name, status, status_color, progress_text, members, deadline):
-        btn = CSSButton(0, 0, 560, 58,
+        btn = Button(0, 0, 560, 58,
             bg_color=WHITE,
             hover_color=(250, 251, 255),
             pressed_color=GRAY_100,
@@ -190,18 +190,18 @@ def main():
             pressed_translate=(0, 1),
         )
         # 状态标签
-        status_label = Label(status, font_tiny, color=status_color)
+        status_label = Text(status, font_tiny, color=status_color)
 
         btn.set_content(HBox(align='space-between', valign='center', padding=(0, 18, 0, 18), children=[
             HBox(gap=14, valign='center', children=[
                 VBox(gap=3, children=[
-                    Label(name, font_h2, color=GRAY_700),
-                    Label(progress_text, font_tiny, color=GRAY_500),
+                    Text(name, font_h2, color=GRAY_700),
+                    Text(progress_text, font_tiny, color=GRAY_500),
                 ]),
             ]),
             HBox(gap=20, valign='center', children=[
-                Label(members, font_small, color=GRAY_500),
-                Label(deadline, font_small, color=GRAY_500),
+                Text(members, font_small, color=GRAY_500),
+                Text(deadline, font_small, color=GRAY_500),
                 status_label,
             ]),
         ]))
@@ -231,7 +231,7 @@ def main():
     # =============================================
 
     def make_action_btn(label, color, hover, pressed):
-        btn = CSSButton(0, 0, 130, 40,
+        btn = Button(0, 0, 130, 40,
             bg_color=color, hover_color=hover, pressed_color=pressed,
             border_radius=8,
             shadow_color=(*color[:3], 30), shadow_blur=4, shadow_offset=(0, 3),
@@ -243,7 +243,7 @@ def main():
     btn_export = make_action_btn("Export Report", (100, 116, 139), (120, 136, 159), (80, 96, 119))
     btn_archive = make_action_btn("Archive Done", PURPLE, (159, 122, 255), (119, 72, 226))
 
-    quick_actions_title = Label("Quick Actions", font_h2, color=GRAY_700)
+    quick_actions_title = Text("Quick Actions", font_h2, color=GRAY_700)
     actions_row = HBox(gap=12, children=[btn_export, btn_archive])
     actions_section = VBox(gap=10, children=[quick_actions_title, actions_row])
 
